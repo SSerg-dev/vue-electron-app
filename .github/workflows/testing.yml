@@ -10,6 +10,7 @@ jobs:
         # run: npm install  
         run: npm ci
       - name: test application
-        run: npm --version  
+        # run: npm --version  
+        run: echo init vue-electron-app!!!
 
 
