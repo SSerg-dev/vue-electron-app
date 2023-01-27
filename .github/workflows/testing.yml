@@ -6,11 +6,10 @@ jobs:
     steps: 
       - name: get repository code
         uses: actions/checkout@v3
-      - name: install dependecies
-        # run: npm install  
-        run: npm ci
-      - name: test application
+      # - name: install dependecies
+      #   run: npm ci
+      # - name: test application
         # run: npm --version  
-        run: echo init vue-electron-app!!!
+        # run: echo init vue-electron-app!!!
 
 
