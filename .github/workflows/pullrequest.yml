@@ -1,8 +1,13 @@
 name: print pullrequest context
-on: workflow_dispatch
+# on: [workflow_dispatch, pull_request]
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, edited, reopened]
+
 jobs:
   print:
     runs-on: ubuntu-20.04
     steps:
       - name: print context
-        run: echo "${{ toJSON(github) }}" 
+        run: echo "${{ toJSON(github.event) }}" 
