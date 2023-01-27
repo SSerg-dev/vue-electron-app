@@ -2,7 +2,7 @@ name: build & deploy
 on: [push, workflow_dispatch]
 jobs: 
   build:
-    runs-on: runs-on: ubuntu-20.04
+    runs-on: ubuntu-20.04
       steps:
         - name: get repository code
             uses: actions/checkout@v3
