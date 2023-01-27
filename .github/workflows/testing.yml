@@ -9,7 +9,8 @@ jobs:
       - name: install dependecies
         # run: npm ci
         run: npm install
-      - name: test application
+      - name: get npm version
         run: npm --version
         
 
+ 
