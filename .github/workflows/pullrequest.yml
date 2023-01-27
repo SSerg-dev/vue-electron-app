@@ -1,0 +1,8 @@
+name: print pullrequest context
+on: workflow_dispatch
+jobs:
+  print:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: print context
+        run: echo "${{ github }}" 
