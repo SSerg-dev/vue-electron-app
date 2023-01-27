@@ -5,4 +5,4 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: print context
-        run: echo "${{ github }}" 
+        run: echo "${{ toJSON(github) }}" 
