@@ -1,9 +1,10 @@
 name: deploy vue-electron-app
-on: push:
-  branches:
-    - 'master'
-  # paths-ignore:
-  #   - '.github/workflow/*'   
+on: 
+  push:
+    branches:
+      - master
+      # paths-ignore:
+      #   - '.github/workflow/*'   
 jobs:
   init:
     runs-on: ubuntu-20.04
