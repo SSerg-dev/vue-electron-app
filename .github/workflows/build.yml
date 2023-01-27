@@ -20,8 +20,8 @@ jobs:
         uses: actions/upload-artifact@v3
         
         with:
-          path: dist_electron
-          name: dist_electron_files 
+          path: build
+          name: build-files 
 
   deploy:
     needs: build
@@ -32,7 +32,7 @@ jobs:
         uses: actions/download-artifact@v3 
 
         with: 
-          name: dist_electron_files  
+          name: build-files  
 
 
 
