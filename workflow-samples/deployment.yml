@@ -24,8 +24,16 @@ jobs:
       - name: get npm version
         run: npm --version
   build:
-    runs-on: ubuntu-20.04
+    
     needs: init
+
+    # strategy:
+    #   matrix:
+    #     node-version: [14, 16]
+    #     os: [ubuntu-20.04, ubuntu-latest]
+
+    runs-on: ubuntu-20.04  
+
     steps: 
       - name: get repository code 
         uses: actions/checkout@v3

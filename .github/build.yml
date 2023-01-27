@@ -1,0 +1,31 @@
+name: build & deploy
+on: [push, workflow_dispatch]
+jobs: 
+  build:
+    runs-on: runs-on: ubuntu-20.04
+      steps:
+        - name: get repository code
+            uses: actions/checkout@v3
+        
+        - name: install dependecies
+        run: npm install
+
+        - name: build application
+        run: npm run build
+
+        - name: upload artifact
+          uses: actions/upload-artifact@v3
+          with:
+            path: dist_electron
+            name: dist_electron_files 
+  deploy:
+    needs: build
+    runs-on: runs-on: ubuntu-20.04
+      steps:
+        - name: get build project
+          uses: actions/download-artifact@v3 
+          with: 
+            name: dist_electron_files  
+
+
+
