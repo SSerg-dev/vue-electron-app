@@ -1,25 +1,46 @@
 name: deploy vue-electron-app
-on: push
+on: push:
+  branches:
+    - master
+  # paths-ignore:
+  #   - '.github/workflow/*'   
 jobs:
   init:
     runs-on: ubuntu-20.04
     steps: 
       - name: get repository code
         uses: actions/checkout@v3
+      
+      - name: cache dependecies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }} 
+
       - name: install dependecies
         run: npm install
+
       - name: get npm version
         run: npm --version
   build:
     runs-on: ubuntu-20.04
     needs: init
     steps: 
-      - name: get repository code
+      - name: get repository code 
         uses: actions/checkout@v3
+      
+      - name: cache dependecies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }} 
+
       - name: install dependecies
         run: npm install
+      
       - name: build application
         run: npm run build
+      
       - name: deploy
         run: echo deploy application ...     
 
