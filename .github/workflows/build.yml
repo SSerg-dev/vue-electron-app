@@ -25,12 +25,12 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: runs-on: ubuntu-20.04
+    runs-on: ubuntu-20.04
 
     steps:
       - name: get build project
         uses: actions/download-artifact@v3 
-        
+
         with: 
           name: dist_electron_files  
 
