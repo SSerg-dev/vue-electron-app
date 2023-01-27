@@ -1,7 +1,7 @@
 name: init vue-electron-app
 on: push
 jobs:
-  test:
+  init:
     runs-on: ubuntu-20.04
     steps: 
       - name: get repository code
