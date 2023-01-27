@@ -13,6 +13,7 @@ jobs:
         run: npm --version
   build:
     runs-on: ubuntu-20.04
+    needs: init
     steps: 
       - name: get repository code
         uses: actions/checkout@v3
