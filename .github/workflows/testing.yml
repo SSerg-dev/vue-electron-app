@@ -9,8 +9,7 @@ jobs:
       - name: install dependecies
         # run: npm ci
         run: npm install
-      # - name: test application
-        # run: npm --version  
-        # run: echo init vue-electron-app!!!
-
+      - name: test application
+        run: npm --version
+        
 
