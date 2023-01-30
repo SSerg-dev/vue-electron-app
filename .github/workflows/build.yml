@@ -14,7 +14,7 @@ jobs:
 
       - name: build application
         # run: npm run build
-        run: yarn electron:build
+        run: npm electron:build
 
       - name: upload artifact
         uses: actions/upload-artifact@v3 
