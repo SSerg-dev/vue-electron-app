@@ -15,8 +15,8 @@ jobs:
      - name: install vue/cli
         npm install -g @vue/cli
 
-      # - name: build application
-      #   run: npm run build
+      - name: build application
+        run: npm run build
         # run: npm electron build
 
       - name: upload artifact
