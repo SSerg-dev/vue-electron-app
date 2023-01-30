@@ -12,19 +12,14 @@ jobs:
       - name: install dependecies
         run: npm install
 
-     - name: install vue/cli
-        npm install -g @vue/cli
-
-      # - name: build application
-      #   run: npm run build
-        # run: npm electron build
+      - name: build application
+        run: npm run build
 
       - name: upload artifact
         uses: actions/upload-artifact@v3 
         
         with:
           path: dist
-          # path: dist_electron
           name: dist-files 
 
   deploy:
