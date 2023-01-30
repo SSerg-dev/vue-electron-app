@@ -21,7 +21,8 @@ jobs:
         uses: actions/upload-artifact@v3 
         
         with:
-          path: dist
+          # path: dist
+          path: dist_electron
           name: dist-files 
 
   deploy:
