@@ -9,7 +9,7 @@
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
-  }, 
+  },
   "main": "background.js",
   "dependencies": {
     "core-js": "^3.8.3",
