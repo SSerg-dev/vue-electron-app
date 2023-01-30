@@ -17,7 +17,7 @@ jobs:
         run: npm install -g @vue/cli
 
       - name: build application
-        run: npm run electron:rebuild
+        run: npm run build
 
       - name: upload artifact
         uses: actions/upload-artifact@v3 

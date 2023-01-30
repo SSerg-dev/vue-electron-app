@@ -7,7 +7,6 @@
     "build": "vue-cli-service build",
     "electron:build": "vue-cli-service electron:build --linux",
     "electron:serve": "vue-cli-service electron:serve",
-    "electron:rebuild": "./node_modules/.bin/electron-rebuild -f",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
