@@ -23,16 +23,16 @@ jobs:
           path: build
           name: build-files 
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-20.04
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-20.04
 
-    steps:
-      - name: get build project
-        uses: actions/download-artifact@v3 
+  #   steps:
+  #     - name: get build project
+  #       uses: actions/download-artifact@v3 
 
-        with: 
-          name: build-files  
+  #       with: 
+  #         name: build-files  
 
 
 
