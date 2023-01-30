@@ -12,8 +12,11 @@ jobs:
       - name: install dependecies
         run: npm install
 
-      - name: install electron-builder
-        vue add electron-builder
+      - name: install vue
+        run: npm vue
+
+      # - name: install electron-builder
+      #   vue add electron-builder
 
       # - name: build application
       #   run: npm electron build
