@@ -12,8 +12,8 @@ jobs:
       - name: install dependecies
         run: npm install
 
-      - name: install vue/cli
-        npm install -g @vue/cli
+      # - name: install vue/cli
+      #   npm install -g @vue/cli
 
       - name: build application
         run: npm run build
