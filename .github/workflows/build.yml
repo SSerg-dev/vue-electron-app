@@ -12,20 +12,18 @@ jobs:
       - name: install dependecies
         run: npm install
 
-      # - name: install vue/cli
-      #   npm install -g @vue/cli
+      - name: install electron-builder
+        vue add electron-builder
 
-      - name: build application
-        run: npm run build
-        # run: npm electron build
+      # - name: build application
+      #   run: npm electron build
 
-      - name: upload artifact
-        uses: actions/upload-artifact@v3 
+      # - name: upload artifact
+      #   uses: actions/upload-artifact@v3 
         
-        with:
-          path: dist
-          # path: dist_electron
-          name: dist-files 
+      #   with:
+      #     path: dist
+      #     name: dist-files 
 
   deploy:
     needs: build
