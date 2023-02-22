@@ -1,0 +1,17 @@
+echo "# vue-electron-app" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/SSerg-work/vue-electron-app.git
+git push -u origin main
+
+
+"scripts": {
+  "serve": "vue-cli-service serve",
+  "build": "vue-cli-service build",
+  "electron:build": "vue-cli-service electron:build --linux  --armv7l",
+  "electron:serve": "vue-cli-service electron:serve",
+  "postinstall": "electron-builder install-app-deps",
+  "postuninstall": "electron-builder install-app-deps"
+},
