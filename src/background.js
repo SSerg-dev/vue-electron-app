@@ -3,12 +3,38 @@
 import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+
+import  { OPCUAService } from './services/OPCUAService' 
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
+
+// -------------------------------------- 
+// start app
+console.log('starting background.js ...', )
+const url =  "opc.tcp://192.168.1.2:4840"
+
+const options = {
+  url,
+  // certificateFile: "certificates/client_selfsigned_cert_2048.pem",
+  // privateKeyFile:   "certificates/PKI/own/private/private_key.pem"
+  
+  certificateFile: "/home/frontend/deploy/vue-electron-app/certificates/client_selfsigned_cert_2048.pem",
+  privateKeyFile:  "/home/frontend/deploy/vue-electron-app/certificates/PKI/own/private/private_key.pem"
+  
+}
+let OPCUAClient = new OPCUAService(options)
+OPCUAClient.start()
+
+
+// --------------------------------------
+
+
+
 
 async function createWindow() {
   // Create the browser window.
