@@ -4,37 +4,43 @@ import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 
-import  { OPCUAService } from './services/OPCUAService' 
+import { OPCUAService } from './services/OPCUAService'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { secure: true, standard: true } }
+  { scheme: 'app', privileges: { secure: true, standard: true } },
 ])
 
-// -------------------------------------- 
+// --------------------------------------
 // start app
-console.log('starting background.js ...', )
-const url =  "opc.tcp://192.168.1.2:4840"
+console.log('starting background.js ...')
+const url = 'opc.tcp://192.168.1.2:4840'
 
 const options = {
   url,
   // certificateFile: "certificates/client_selfsigned_cert_2048.pem",
   // privateKeyFile:   "certificates/PKI/own/private/private_key.pem"
-  
-  certificateFile: "/home/frontend/deploy/vue-electron-app/certificates/client_selfsigned_cert_2048.pem",
-  privateKeyFile:  "/home/frontend/deploy/vue-electron-app/certificates/PKI/own/private/private_key.pem"
-  
+
+  certificateFile:
+    '/home/frontend/deploy/vue-electron-app/certificates/client_selfsigned_cert_2048.pem',
+    //'/home/frontend/deploy/vue-electron-app/certificates/client_csr.pem',
+  privateKeyFile:
+    '/home/frontend/deploy/vue-electron-app/certificates/PKI/own/private/private_key.pem',
+    //'/home/frontend/deploy/vue-electron-app/certificates/PKI/own/private/client_private_key.pem',
+    endpointMustExist: false,
+  // nodesets/Opc.Ua.CNC.NodeSet.xml
+  nodeset_filename:
+    '/home/frontend/deploy/vue-electron-app/nodesets/Opc.Ua.CNC.NodeSet.xml',
 }
-let OPCUAClient = new OPCUAService(options)
-OPCUAClient.start()
-
-
+try {
+  let OPCUAClient = new OPCUAService(options)
+  OPCUAClient.start()
+} catch (err) {
+  console.log('$$ err:', err)
+}
 // --------------------------------------
-
-
-
 
 async function createWindow() {
   // Create the browser window.
@@ -42,12 +48,11 @@ async function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
-    }
+      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+    },
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
