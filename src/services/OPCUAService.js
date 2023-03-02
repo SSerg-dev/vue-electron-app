@@ -28,22 +28,41 @@ export class OPCUAService extends EventEmitter {
     this.subscription = null
 
     this.client = OPCUAClient.create({
-      applicationName: 'Panel',
+      //applicationName: 'Panel',
 
       securityMode: MessageSecurityMode.None,
       securityPolicy: SecurityPolicy.None,
 
-      endpointMustExist: options.endpointMustExist,
-      nodeset_filename: options.nodeset_filename,
+      endpointMustExist: false,//options.endpointMustExist,
+      //nodeset_filename: options.nodeset_filename,
 
       keepSessionAlive: true,
       connectionStrategy: {
         initialDelay: 2000,
         maxDelay: 10000,
       },
-      certificateFile: options.certificateFile,
-      privateKeyFile: options.privateKeyFile,
+      //certificateFile: options.certificateFile,
+      //privateKeyFile: options.privateKeyFile,
     })
+
+    this.client.on("connection_failed", () => {
+      console.log(`Client failed to connect.`);
+    }).on("connection_lost", () => {
+        console.log(`Client lost the connection.`);
+    }).on("start_reconnection", () => {
+        console.log(`Client is starting the reconnection process.`);
+    }).on("reconnection_attempt_has_failed", (_, message) => {
+        console.log(`Client reconnection attempt has failed: ${message}`);
+    }).on("after_reconnection", () => {
+        console.log(`Client finished the reconnection process.`);
+    }).on("backoff", (attemptNumber, delay) => {
+        console.log(`Client connection retry attempt ${attemptNumber} retrying in ${delay}ms.`);
+    }).on("close", () => {
+        console.log(`Client closed and disconnected`);
+    }).on("timed_out_request", (request) => {
+        console.log(`Client request timed out: ${request.toString()}`);
+    });
+  
 
     // ----------------------------------
     console.log('OPCUAService url:', this.endpointUrl)
@@ -71,127 +90,92 @@ export class OPCUAService extends EventEmitter {
 
   // ------------------------------------
   async start(type = 'Post', num = 2) {
-    // ----------------------------------
-    await this.stop()
-    await this.client.connect(this.endpointUrl)
-    console.log(`$$ Connected to ${this.endpointUrl}`)
-    // ----------------------------------
-    this.session = await this.client.createSession()
 
-    this.subscription = ClientSubscription.create(this.session, {
-      publishingEnabled: true,
-      maxNotificationsPerPublish: 1000,
-      requestedPublishingInterval: 1000,
-      requestedLifetimeCount: 100,
-      requestedMaxKeepAliveCount: 10,
-      priority: 10,
-    })
-    // ----------------------------------
-    this.subscription = ClientSubscription.create(this.session, {
-      publishingEnabled: true,
-      maxNotificationsPerPublish: 1000,
-      requestedPublishingInterval: 1000,
-      requestedLifetimeCount: 100,
-      requestedMaxKeepAliveCount: 10,
-      priority: 10,
-    })
-
-    // ----------------------------------
-
-    this.subscription
-      .on('started', () => {
-        console.log(
-          'subscription started for 2 seconds - subscriptionId=',
-          this.subscription.subscriptionId
-        )
-      })
-      .on('keepalive', () => {
-        console.log('subscription keepalive')
-      })
-      .on('terminated', () => {
-        console.log('subscription terminated')
-      })
-      .on('internal_error', (err) => {
-        console.log('subscription internal_error', err)
-      })
-      .on('error', (err) => {
-        console.log('subscription error', err)
-      })
-      .on('status_changed', (status, diagnosticInfo) => {
-        console.log('subscription status', status)
-        console.log('subscription diagnosticInfo', diagnosticInfo)
-      })
-    // ----------------------------------
-    let itemsToMonitor = [
-      {
-        nodeId: {
-          identifierType: 2,
-          value: '::AsGlobalPV:PostN[1].progStatusMask',
-          namespace: 6,
-        },
-        attributeId: 13,
-      },
-
-      {
-        nodeId: {
-          identifierType: 2,
-          value: '::AsGlobalPV:PostN[1].progShowMask',
-          namespace: 6,
-        },
-        attributeId: 13,
-      },
-      {
-        nodeId: {
-          identifierType: 2,
-          value: '::AsGlobalPV:PostN[1].progPrice',
-          namespace: 6,
-        },
-        attributeId: 13,
-      },
-
-      /* {
-        nodeId: {
-          identifierType: 2,
-          value: '::AsGlobalPV:DateTime.Time',
-          namespace: 6,
-        },
-        attributeId: 13,
-      }, */
-    ]
-    // ----------------------------------
     try {
-      this.monitoredItemGroup = ClientMonitoredItemGroup.create(
-        this.subscription,
-        itemsToMonitor,
-        {
-          samplingInterval: 10,
-          discardOldest: true,
-          queueSize: 1,
-        },
-        TimestampsToReturn.Both
-      )
+      // ----------------------------------
+      await this.stop()
+      await this.client.connect(this.endpointUrl)
+      console.log(`$$ Connected to ${this.endpointUrl}`)
+
+      // ----------------------------------
+      this.session = await this.client.createSession()
+      
+      this.session.on("keepalive", () => {
+        console.log(`Session keepalive received.`);
+      }).on("keepalive_failure", (state) => {
+          console.log(`Session encountered a keepalive error: ${state !== undefined ? state.toString() : "No state provided."}`);
+      }).on("session_closed", (statusCode) => {
+          console.log(`Session closed. Status code: ${statusCode.toString()}`);
+      }).on("session_restored", () => {
+          console.log(`Session restored.`);
+      });
+
+
+      // ----------------------------------
+      this.subscription = ClientSubscription.create(this.session, {
+        requestedPublishingInterval: 1000,
+        requestedMaxKeepAliveCount: 5,
+        requestedLifetimeCount: 10,
+        maxNotificationsPerPublish: 10,
+        publishingEnabled: true,
+        priority: 10,
+      })
+
+      // ----------------------------------
+
+      this.subscription.on("started", () => {
+        console.log(`Subscription started, subscriptionId: ${this.subscription.subscriptionId}`);
+      }).on("terminated", () => {
+          console.log(`Subscription '${this.subscription.subscriptionId}' was terminated.`);
+      }).on("keepalive", () => {
+          console.log(`Subscription '${this.subscription.subscriptionId}' keepalive received.`);
+      }).on("internal_error", (err) => {
+          console.log(`Subscription '${this.subscription.subscriptionId}' encountered an internal error: ${err.message}`);
+      }).on("status_changed", (status, diagnosticInfo) => {
+          console.log(
+              `Subscription '${this.subscription.subscriptionId}' status changed. New status: ${status.toString()}. ` +
+              `Diagnostics: ${diagnosticInfo.toString()}`
+          );
+      }).on("error", (err) => {
+          console.log(`Subscription '${this.subscription.subscriptionId}' encountered a (non-internal) error: ${err.message}`);
+      });
+
+      let itemsToMonitor = [];
+      const nodes = require("/home/frontend/deploy/vue-electron-app/node.json");
+
+      Object.keys(nodes).forEach(name => {
+          itemsToMonitor.push({
+              nodeId: "ns=6;s=" + String(name),
+              attributeId: AttributeIds.Value
+          });
+      });
+
+      this.monitoredItemGroup  = ClientMonitoredItemGroup.create(
+          this.subscription,
+          itemsToMonitor,
+          {
+              samplingInterval: 1000,
+              discardOldest: true,
+              queueSize: 100
+          },
+          TimestampsToReturn.Both
+      );
+
+      this.monitoredItemGroup.on("err", (err) => console.log("Monitored item group error:", err));
+      this.monitoredItemGroup.on("terminated", (err) => console.log("Monitored item group terminated:", err));
+      this.monitoredItemGroup.on("initialized", () => console.log("Monitored item group initialized"));
+
+      this.monitoredItemGroup.on("changed", (monitoredItem, dataValue, index) => {
+          const value = String(dataValue.value.value);
+          const nodeId = String(monitoredItem.itemToMonitor.nodeId.value);
+          console.log("new data:", nodeId, value);
+      });
+
     } catch (err) {
-      console.log('$$ ClientMonitoredItemGroup.create(...) err:', err)
+      console.log("An error has occured : ", err);
     }
-    // ----------------------------------
-    this.monitoredItemGroup
-      .on('changed', (monitoredItem, dataValue, index) => {
-        try {
-          console.log('$$ dataValue', dataValue.value)
-        } catch (err) {
-          console.log(err)
-        }
-      })
-      .on('err', () => {
-        console.log('monitoredItemGroup err')
-      })
-      .on('terminated', () => {
-        console.log('monitoredItemGroup terminated')
-      })
-      .on('initialized', () => {
-        console.log('monitoredItemGroup initialized')
-      })
   }
+
 }
 
 // export { OPCUAService }
